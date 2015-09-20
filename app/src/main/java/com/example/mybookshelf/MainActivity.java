@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.mybookshelf.db.MyHelper;
 import com.example.mybookshelf.model.Book;
 
 import java.io.IOException;
@@ -22,16 +25,34 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
     //public static final ArrayList<Book> BOOKS = new ArrayList<>();
 
+    private MyHelper helper;
+    private SQLiteDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        helper = new MyHelper(this);
+        db = helper.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + MyHelper.TABLE_NAME, null);
+
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndex(MyHelper.COL_ID));
+            String title = cursor.getString(cursor.getColumnIndex(MyHelper.COL_TITLE));
+            String subTitle = cursor.getString(cursor.getColumnIndex(MyHelper.COL_SUB_TITLE));
+
+            String msg = String.format("ID: %d, Title: %s, Subtitle: %s", id, title, subTitle);
+            Log.i(TAG, msg);
+        }
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 

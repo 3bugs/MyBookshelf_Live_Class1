@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.mybookshelf.R;
 import com.example.mybookshelf.Utils;
+import com.example.mybookshelf.db.BooksDAO;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ public class Books {
     private Context mContext;
     private static Books mInstance;
 
+    private BooksDAO mBooksDAO;
+    private boolean mDirty;
+
     public static Books getInstance(Context context) {
         if (mInstance == null) {
             mInstance = new Books(context);
@@ -29,15 +33,39 @@ public class Books {
 
     private Books(Context context) {
         this.mContext = context;
-        addSampleBookData();
+        mDirty = true;
+        mBooksDAO = new BooksDAO(context);
+        //addSampleBookData();
     }
 
     public ArrayList<Book> getBooks() {
+        ArrayList<Book> tempData;
+
+        if (mDirty == true) {
+            tempData = mBooksDAO.selectAll();
+            DATA.clear();
+            for (Book b : tempData) {
+                DATA.add(b);
+            }
+            mDirty = false;
+        }
         return DATA;
     }
 
     public void addBook(Book newBook) {
-        DATA.add(newBook);
+        mBooksDAO.insert(
+                newBook.getTitle(),
+                newBook.getSubTitle(),
+                newBook.getIsbn(),
+                newBook.getDescription(),
+                newBook.getCoverImageFilename()
+        );
+        try {
+            Utils.copyFileFromAssetsToImagesDir(mContext, newBook.getCoverImageFilename());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mDirty = true;
     }
 
     private void addSampleBookData() {
