@@ -15,6 +15,13 @@ import android.view.View;
 
 import com.example.mybookshelf.db.MyHelper;
 import com.example.mybookshelf.model.Book;
+import com.example.mybookshelf.net.BooksHTTP;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +40,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        BooksHTTP b = new BooksHTTP(this);
+        b.insertSampleBookData();
+
+/*
         helper = new MyHelper(this);
         db = helper.getWritableDatabase();
 
@@ -46,7 +57,35 @@ public class MainActivity extends AppCompatActivity
             String msg = String.format("ID: %d, Title: %s, Subtitle: %s", id, title, subTitle);
             Log.i(TAG, msg);
         }
+*/
+        testOkHttp();
+    }
 
+    private void testOkHttp() {
+        final OkHttpClient client = new OkHttpClient();
+
+        RequestBody formBody = new FormEncodingBuilder()
+                .add("name", "Promlert")
+                .add("age", "40")
+                .build();
+
+        final Request request = new Request.Builder()
+                .url("http://192.168.56.1/mybookshelf/test.php")
+                .post(formBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                String msg = response.body().string();
+                Log.i(TAG, msg);
+            }
+        });
     }
 
     @Override
