@@ -36,7 +36,7 @@ import java.util.Map;
 public class BooksHTTP {
 
     private static final String TAG = "BooksHTTP";
-    private static final String BASE_URL = "http://192.168.56.1/mybookshelf/";
+    public static final String BASE_URL = "http://192.168.56.1/mybookshelf/";
     private static final String SELECT_ALL_URL = BASE_URL + "select_all.php";
     private static final String INSERT_URL = BASE_URL + "insert.php";
     private static final String UPDATE_URL = BASE_URL + "update.php";

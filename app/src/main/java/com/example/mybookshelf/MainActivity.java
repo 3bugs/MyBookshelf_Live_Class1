@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         BooksHTTP b = new BooksHTTP(this);
-        b.insertSampleBookData();
+        //b.insertSampleBookData();
 
 /*
         helper = new MyHelper(this);
@@ -64,14 +64,16 @@ public class MainActivity extends AppCompatActivity
     private void testOkHttp() {
         final OkHttpClient client = new OkHttpClient();
 
+/*
         RequestBody formBody = new FormEncodingBuilder()
                 .add("name", "Promlert")
                 .add("age", "40")
                 .build();
+*/
 
         final Request request = new Request.Builder()
                 .url("http://192.168.56.1/mybookshelf/test.php")
-                .post(formBody)
+                /*.post(formBody)*/
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.mybookshelf.R;
 import com.example.mybookshelf.Utils;
 import com.example.mybookshelf.db.BooksDAO;
+import com.example.mybookshelf.net.BooksHTTP;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +22,8 @@ public class Books {
     private Context mContext;
     private static Books mInstance;
 
-    private BooksDAO mBooksDAO;
+    //private BooksDAO mBooksDAO;
+    private BooksHTTP mBooksHTTP;
     private boolean mDirty;
 
     public static Books getInstance(Context context) {
@@ -34,25 +36,33 @@ public class Books {
     private Books(Context context) {
         this.mContext = context;
         mDirty = true;
-        mBooksDAO = new BooksDAO(context);
+        //mBooksDAO = new BooksDAO(context);
+        mBooksHTTP = new BooksHTTP(context);
         //addSampleBookData();
     }
 
     public ArrayList<Book> getBooks() {
-        ArrayList<Book> tempData;
+        //ArrayList<Book> tempData;
 
         if (mDirty == true) {
-            tempData = mBooksDAO.selectAll();
-            DATA.clear();
-            for (Book b : tempData) {
-                DATA.add(b);
-            }
-            mDirty = false;
+            //tempData = mBooksDAO.selectAll();
+
+            mBooksHTTP.selectAll(new BooksHTTP.OnQueryResponseListener() {
+                @Override
+                public void onSuccess(ArrayList<Book> books) {
+                    DATA.clear();
+                    for (Book b : books) {
+                        DATA.add(b);
+                    }
+                    mDirty = false;
+                }
+            });
         }
         return DATA;
     }
 
     public void addBook(Book newBook) {
+/*
         mBooksDAO.insert(
                 newBook.getTitle(),
                 newBook.getSubTitle(),
@@ -66,6 +76,7 @@ public class Books {
             e.printStackTrace();
         }
         mDirty = true;
+*/
     }
 
     private void addSampleBookData() {
